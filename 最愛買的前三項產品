@@ -1,0 +1,19 @@
+
+
+/*列出每位客戶購買數量最愛買的前三項產品 轉PIVOT*/
+SELECT*
+FROM
+(
+		SELECT A.客戶編號 ,C.產品,
+		CONVERT(varchar,ROW_NUMBER()OVER(PARTITION BY A.客戶編號 ORDER BY SUM(B.數量) DESC)) rowNum
+		FROM 訂貨主檔 AS A INNER JOIN 訂貨明細 AS B ON A.訂單號碼=B.訂單號碼
+		JOIN 產品資料 AS C ON B.產品編號=C.產品編號
+		GROUP BY A.客戶編號 ,C.產品
+
+) AS P
+PIVOT
+(
+  MAX(產品)
+  FOR [rowNum] IN ([1],[2],[3])
+)PVT
+-----
