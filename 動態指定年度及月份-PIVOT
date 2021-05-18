@@ -1,0 +1,32 @@
+
+
+
+CREATE PROCEDURE 各縣市各類產品查詢 @Year INT,  @month INT
+AS
+
+		DECLARE @col NVARCHAR (MAX)=''---宣告變數來儲存類別名稱
+		SELECT @col=STRING_AGG(QUOTENAME([類別名稱]),',') FROM 產品類別
+
+EXECUTE('
+SELECT 縣市,'+@col+'
+FROM 
+( 
+			SELECT A.送貨城市 AS 縣市,D.類別名稱,SUM(B.數量) AS 數量 
+			FROM 訂貨主檔 AS A JOIN 訂貨明細 AS B ON A.訂單號碼=B.訂單號碼
+	               JOIN 產品資料 AS C ON B.產品編號=C.產品編號
+				   JOIN 產品類別 AS D ON C.類別編號=D.類別編號
+		    WHERE YEAR(A.訂單日期)='+@Year+' AND MONTH(A.訂單日期)='+@Month+'
+			GROUP BY A.送貨城市,D.類別名稱
+
+
+			
+
+) AS X
+PIVOT
+(
+  SUM(X.數量) 
+  FOR X.類別名稱 IN('+ @col +')
+) AS PVT');
+
+EXEC  各縣市各類產品查詢 2003,12
+
