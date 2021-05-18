@@ -1,0 +1,20 @@
+
+/*每位客戶平均購買頻率(天數)*/
+
+SELECT A.客戶編號 ,COUNT(A.客戶編號) AS 購買次數
+		,DATEDIFF(DAY,LAG(A.訂單日期) OVER(PARTITION BY 客戶編號) ORDER BY 客戶編號,訂單日期 )) AS 日期差
+		
+FROM 訂貨主檔 AS A JOIN 
+(		SELECT 訂單號碼
+		FROM 訂貨明細
+		GROUP BY 訂單號碼
+)AS B ON A.訂單號碼= B.訂單號碼
+GROUP BY A.客戶編號 ,A.訂單日期
+ORDER BY A.客戶編號 DESC
+
+
+
+SELECT A.客戶編號,COUNT(A.客戶編號) AS 購買次數
+FROM 訂貨主檔 AS A JOIN 訂貨明細 AS B ON A.訂單號碼=B.訂單號碼
+GROUP BY A.客戶編號
+ORDER BY 購買次數
