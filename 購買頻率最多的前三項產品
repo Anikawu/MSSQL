@@ -1,0 +1,9 @@
+
+/*列出某位客戶購買頻率最多的前三項產品(包含頻率)*/
+
+   SELECT TOP(3)C.產品,COUNT(B.產品編號) AS 次數
+   FROM 訂貨主檔 AS A INNER JOIN 訂貨明細 AS B ON A.訂單號碼=B.訂單號碼
+		JOIN 產品資料 AS C ON B.產品編號=C.產品編號
+   WHERE 客戶編號='SAVEA'
+   GROUP BY C.產品
+   ORDER BY 次數 DESC
