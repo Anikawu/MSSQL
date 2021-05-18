@@ -1,0 +1,101 @@
+
+
+有一員工表.結構如下
+EmployeeID Name 
+------------------
+1001 張三
+1002 李四
+1003 王五
+另有一張員工出勤刷卡表
+EmployeeID Date
+----------------------
+1001 2007/03/24
+1002 2007/03/24
+1003 2007/03/24
+1001 2007/03/25
+1002 2007/03/25
+1001 2007/03/26
+1003 2007/03/26
+
+從上面可以看出..員工王五在2007/03/25沒有刷卡.李四在2007/03/26沒有刷卡.
+所以我想得出如下的資訊:
+EmployeeID Date
+-----------------------
+1003 2007/03/25
+1002 2007/03/26
+
+
+-----------------------------------------------------------------------
+-----------------------------------------------------------------------
+
+CREATE TABLE #員工
+(
+  員工編號 VARCHAR(4),
+  姓名 NVARCHAR(10)
+)
+go
+CREATE TABLE #出缺勤
+(
+  員工編號 VARCHAR(4),
+  上班日 DATE
+)
+go
+
+INSERT INTO #員工 VALUES('1001','張三')
+INSERT INTO #員工 VALUES('1002','李四')
+INSERT INTO #員工 VALUES('1003','王五')
+
+INSERT INTO #出缺勤 VALUES('1001','2007/03/24')
+INSERT INTO #出缺勤 VALUES('1002','2007/03/24')
+INSERT INTO #出缺勤 VALUES('1003','2007/03/24')
+INSERT INTO #出缺勤 VALUES('1001','2007/03/25')
+INSERT INTO #出缺勤 VALUES('1002','2007/03/25')
+INSERT INTO #出缺勤 VALUES('1001','2007/03/26')
+INSERT INTO #出缺勤 VALUES('1003','2007/03/26')
+
+----------------------------------------------------------------------------------
+SELECT * FROM #員工
+SELECT * FROM #出缺勤
+
+SELECT A.員工編號,B.上班日
+FROM #員工 AS A
+	CROSS JOIN (SELECT DISTINCT 上班日 FROM #出缺勤) AS B
+
+--0.0334
+SELECT * FROM (
+	SELECT A.員工編號,B.上班日
+	FROM #員工 AS A
+	CROSS JOIN (SELECT DISTINCT 上班日 FROM #出缺勤) AS B
+) AS C
+EXCEPT
+SELECT * FROM #出缺勤
+
+--0.0224
+SELECT C.*
+FROM (
+	SELECT A.員工編號,B.上班日
+	FROM #員工 AS A
+	CROSS JOIN (SELECT DISTINCT 上班日 FROM #出缺勤) AS B
+) AS C LEFT JOIN  #出缺勤 AS D ON C.上班日=D.上班日 AND C.員工編號=D.員工編號
+WHERE D.員工編號 IS NULL
+
+
+---------------------------------------------
+
+WITH T1
+AS
+(
+	SELECT DISTINCT 上班日 FROM #出缺勤
+)
+,T2
+AS
+(
+	SELECT A.員工編號,B.上班日
+	FROM #員工 AS A CROSS JOIN T1 AS B
+)
+
+SELECT C.*
+FROM T2 AS C LEFT JOIN #出缺勤 AS D
+	ON C.上班日=D.上班日 AND C.員工編號=D.員工編號
+WHERE D.員工編號 IS NULL
+
