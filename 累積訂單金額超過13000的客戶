@@ -1,0 +1,17 @@
+
+
+/*列出 2003年 年度累積訂單金額超過13000的客戶 TOP 10*/
+
+
+SELECT TOP(10) A.客戶編號,SUM(B.總金額) AS 交易金額
+FROM 訂貨主檔 AS A JOIN
+(
+SELECT 訂單號碼,ROUND(SUM(單價*數量*(1-折扣)),2) AS 總金額
+FROM 訂貨明細
+GROUP BY 訂單號碼
+) 
+AS B ON A.訂單號碼 = B.訂單號碼
+WHERE YEAR(A.訂單日期)=2003 
+GROUP BY A.客戶編號  
+HAVING SUM(B.總金額)>13000
+ORDER BY 交易金額 DESC
