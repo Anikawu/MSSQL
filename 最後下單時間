@@ -1,0 +1,9 @@
+
+/*查出每位客戶最後下單時間？*/
+
+SELECT A.客戶編號,A.訂單日期
+FROM 訂貨主檔 AS A
+WHERE 訂單日期 = (SELECT MAX(b.訂單日期) FROM 訂貨主檔 B WHERE A.客戶編號 = B.客戶編號)
+ORDER BY 訂單日期 DESC
+
+
