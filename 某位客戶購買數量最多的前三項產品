@@ -1,0 +1,12 @@
+
+
+/*(包含產品相關資料，不僅只有產品編號)
+列出某位客戶購買數量最多的前三項產品(包含數量)*/
+
+
+ SELECT TOP(3)C.產品,SUM(B.數量) AS 數量
+   FROM 訂貨主檔 AS A INNER JOIN 訂貨明細 AS B ON A.訂單號碼=B.訂單號碼
+		JOIN 產品資料 AS C ON B.產品編號=C.產品編號
+   WHERE 客戶編號='SAVEA'
+   GROUP BY C.產品
+   ORDER BY 數量 DESC
