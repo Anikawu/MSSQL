@@ -1,0 +1,32 @@
+
+
+/*列出 2003年 每類產品購買最多的前5名客戶資料*/
+
+
+WITH TT
+AS
+(
+		SELECT D.類別名稱,A.客戶編號,
+		ROW_NUMBER()OVER(PARTITION BY A.客戶編號 ORDER BY COUNT(B.產品編號) DESC) rowNum
+		FROM 訂貨主檔 AS A INNER JOIN 訂貨明細 AS B ON A.訂單號碼=B.訂單號碼
+		JOIN 產品資料 AS C ON B.產品編號=C.產品編號
+		JOIN 產品類別 AS D ON C.類別編號=D.類別編號
+		WHERE YEAR(A.訂單日期)=2003
+		GROUP BY D.類別名稱,A.客戶編號
+
+),
+T2
+AS(
+
+   SELECT TT.類別名稱,TT.客戶編號,TT.rowNum
+   FROM TT WHERE rowNum<=5
+
+)
+
+SELECT 類別名稱,[1],[2],[3],[4],[5]
+FROM T2
+PIVOT
+(
+  MAX(客戶編號)
+  FOR [rowNum] IN ([1],[2],[3],[4],[5])
+)PVT;
