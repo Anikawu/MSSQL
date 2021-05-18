@@ -1,0 +1,12 @@
+
+/*找出目前產品庫存屬於「海鮮」的各項產品名稱、單價、庫存量*/
+
+WITH TT
+AS
+(
+		SELECT D.類別名稱,C.產品,C.單價,C.庫存量
+		FROM 產品資料 AS C 
+		INNER JOIN 產品類別 AS D ON C.類別編號=D.類別編號
+		WHERE D.類別名稱=8
+		GROUP BY D.類別名稱,C.產品,C.單價,C.庫存量
+)   SELECT * FROM TT 
