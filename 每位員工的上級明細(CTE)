@@ -1,0 +1,18 @@
+
+
+/*每位員工的上級明細(CTE) 例：(2)陳季暄→(1)張瑾雯→(4)林美麗*/
+
+
+WITH EE
+AS
+(
+	SELECT 員工編號,姓名,主管,'('+CAST(員工編號 AS VARCHAR)+')'+
+	CAST(姓名 AS NVARCHAR(MAX))
+	AS 主管排序 FROM 員工 WHERE 主管 IS NULL
+	UNION ALL
+	SELECT A.員工編號,A.姓名,A.主管,B.主管排序+'→'+'('+CAST(A.員工編號 AS VARCHAR)+')'+
+	A.姓名 AS 主管排序 FROM 員工 AS A
+	INNER JOIN EE AS B ON A.主管=B.員工編號
+)
+
+SELECT 主管排序 FROM EE;
