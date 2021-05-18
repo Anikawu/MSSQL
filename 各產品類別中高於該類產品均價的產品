@@ -1,0 +1,8 @@
+
+
+/*列出各產品類別中高於該類產品均價的產品*/
+
+SELECT B.產品 AS 產品名稱,B.單價 AS 單價 ,A.均價 AS 類別均價
+FROM (SELECT 類別編號 ,AVG(單價)  AS 均價 FROM 產品資料 GROUP BY 類別編號) AS A 
+		JOIN 產品資料 AS B ON A.類別編號=B.類別編號
+WHERE B.單價> A.均價
