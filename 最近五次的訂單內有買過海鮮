@@ -1,0 +1,34 @@
+
+/*找出每位客戶的最近五次的訂單內有買過海鮮(挑一產品類)？(愈近愈好)(第幾次有買)*/
+
+
+WITH T1
+AS(
+
+		SELECT DISTINCT 訂單號碼  ---選出所有買過海鮮的訂單號碼
+		FROM 訂貨明細 AS A JOIN 產品資料 AS B ON A.產品編號=B.產品編號
+		WHERE B.類別編號=8
+),
+T2
+AS
+(
+			SELECT A.客戶編號,B.訂單號碼 
+			FROM 訂貨主檔 AS A JOIN T1 AS B ON A.訂單號碼=B.訂單號碼
+),
+T3
+AS(
+
+	SELECT A.客戶編號,A.訂單號碼,A.訂單日期,
+	       ROW_NUMBER() OVER (PARTITION BY 客戶編號 ORDER BY 訂單日期 DESC) AS 購買次數
+	FROM 訂貨主檔 AS A
+),
+T4
+AS(
+	SELECT B.*
+	FROM T2 AS A JOIN T3 AS B ON A.客戶編號=B.客戶編號 AND A.訂單號碼=B.訂單號碼
+)
+SELECT C.客戶編號,MIN(購買次數) AS 購買次數
+FROM T4 AS C
+WHERE 購買次數 < 6
+GROUP BY C.客戶編號
+
