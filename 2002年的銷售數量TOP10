@@ -1,0 +1,11 @@
+
+/* 2002年的銷售數量TOP10*/
+
+SELECT TOP 10 C.產品 ,SUM(B.數量) AS 年度銷售 
+FROM 訂貨主檔 AS A JOIN 訂貨明細 AS B ON A.訂單號碼=B.訂單號碼
+	JOIN 產品資料 AS C ON B.產品編號=C.產品編號
+WHERE A.訂單日期>='2003-1-1' AND A.訂單日期<'2004-1-1' 
+GROUP BY C.產品
+ORDER BY 年度銷售 DESC;
+
+
