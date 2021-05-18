@@ -1,0 +1,44 @@
+
+
+--找出單號最大者
+KK001 1
+KK001 2
+KK001 3
+KK001 4
+KK002 1
+KK002 2
+KK002 3
+變成↓↓↓↓↓
+KK001 4
+KK002 3
+
+-----------------------------------------------------------------------
+-----------------------------------------------------------------------
+
+
+CREATE TABLE #T1
+(
+  單號 VARCHAR(5),
+  次數 INT,
+  內容 NVARCHAR(10)
+)
+
+INSERT INTO #T1 VALUES('aa001', 1, '測')
+INSERT INTO #T1 VALUES('aa001', 2, '測試')
+INSERT INTO #T1 VALUES('aa001', 3, '測試完')
+INSERT INTO #T1 VALUES('aa001', 4, '測試完成')
+INSERT INTO #T1 VALUES('aa002', 1, '實')
+INSERT INTO #T1 VALUES('aa002', 2, '實驗')
+INSERT INTO #T1 VALUES('aa002', 3, '實驗完')
+INSERT INTO #T1 VALUES('aa002', 4, '實驗完成')
+INSERT INTO #T1 VALUES('aa003', 1, '驗')
+INSERT INTO #T1 VALUES('aa003', 2, '驗證')
+INSERT INTO #T1 VALUES('aa003', 3, '驗證完')
+
+
+------------------------------------------------------------------------
+SELECT 單號,MAX(次數) AS 單號最大者
+FROM #T1
+GROUP BY 單號
+
+
