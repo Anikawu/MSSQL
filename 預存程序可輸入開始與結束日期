@@ -1,0 +1,20 @@
+
+/*設計出預存程序可輸入開始與結束日期，找出此段期間內，客戶下訂單的資訊(客戶編號, 公司名稱, 訂單日期, 產品名稱, 訂購數量)*/
+
+CREATE PROCEDURE 下單資訊 @startTime DATE,  @endTime DATE
+AS
+
+		SELECT  A.客戶編號,D.公司名稱,A.訂單日期,C.產品,B.數量
+		FROM 訂貨主檔 AS A INNER JOIN 訂貨明細 AS B ON A.訂單號碼=B.訂單號碼
+						JOIN 產品資料 AS C ON B.產品編號=C.產品編號
+						JOIN 客戶 AS D ON A.客戶編號=D.客戶編號
+		WHERE  A.訂單日期>= @startTime  AND A.訂單日期<=@endTime 
+GO
+drop PROCEDURE 下單資訊
+GO
+
+EXECUTE 下單資訊 '2002-4-5','2002-12-30'
+
+
+
+
