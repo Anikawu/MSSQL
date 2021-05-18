@@ -1,0 +1,38 @@
+
+
+/*每個客戶下訂單，每個月不得超過該客戶的信用額度*/
+
+
+CREATE TRIGGER 信用額度觸發 ON [dbo].[書籍訂單資料]
+AFTER INSERT
+AS
+	DECLARE @customerId INT;
+	DECLARE @bookId INT;
+	DECLARE @price INT;
+	DECLARE @num INT;
+	DECLARE @date DATE;
+	DECLARE @credit INT;
+	DECLARE @total INT;
+	DECLARE @alreadyBuy INT;
+
+	SELECT @customerId=[客戶編號], @bookId=[書籍編號],@date=[訂購日期],@num=[訂購數量]
+	FROM inserted;
+
+	SELECT @credit=信用額度 FROM [dbo].[書籍客戶資料] WHERE 客戶編號=@customerId;
+	SElECT @price =[售價] FROM [dbo].[書籍資料] WHERE 書籍編號=@bookId;
+	SET @total=@price*@num;
+
+	SELECT @alreadyBuy=SUM(A.訂購數量*B.售價)
+	FROM 書籍訂單資料 AS A JOIN 書籍資料 AS B ON A.書籍編號=B.書籍編號
+	WHERE A.客戶編號=@customerId AND YEAR(A.訂購日期)=YEAR(GETDATE()) AND MONTH(A.訂購日期)=MONTH(GETDATE())
+	
+	IF @alreadyBuy >@credit
+	 THROW 50010,'已經超出信用額度!',10
+
+GO
+
+INSERT INTO [dbo].[書籍訂單資料] VALUES(90,1,6,'2021-05-16 ',500000,1);
+
+SELECT [dbo].[書籍訂單資料](90,1,6,'2021-05-11',1250,1)   ---500000
+
+
