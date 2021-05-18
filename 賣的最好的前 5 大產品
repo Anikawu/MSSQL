@@ -1,0 +1,25 @@
+
+
+/*針對 2003 年賣的最好的前 5 大產品，統計出各員工的針對這些產品的銷售數量(員工姓名, 產品名稱, 數量)*/
+
+WITH A1 AS(
+
+			SELECT TOP(5)C.產品,SUM(B.數量) AS 數量
+			FROM 訂貨主檔 AS A INNER JOIN 訂貨明細 AS B ON A.訂單號碼=B.訂單號碼
+							JOIN 產品資料 AS C ON B.產品編號=C.產品編號
+			WHERE YEAR(A.訂單日期)=2003
+			GROUP BY C.產品
+			ORDER BY SUM(B.數量) DESC
+)
+
+			SELECT C.姓名,E.產品,SUM(B.數量) AS 銷售數量
+			FROM 訂貨主檔 AS A INNER JOIN 訂貨明細 AS B ON A.訂單號碼=B.訂單號碼
+							JOIN 員工 AS C ON A.員工編號=C.員工編號
+							JOIN 產品資料 AS D ON B.產品編號=D.產品編號
+							JOIN A1 AS E ON D.產品= E.產品
+			GROUP BY C.姓名,E.產品
+			ORDER  BY C.姓名
+      
+      
+      
+      
