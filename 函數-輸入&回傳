@@ -1,0 +1,22 @@
+/*設計出函數針對一產品項目，若想要下訂單，傳回是否有足夠的庫存量可以出貨。
+如：輸入產品編號與訂購數量，若庫存足夠可以出貨則回傳「庫存OK」，而庫存不足則回傳「庫存不足」*/
+
+
+CREATE FUNCTION 產品庫存量(@Product INT,@nn INT) RETURNS NVARCHAR(30) 
+AS
+	BEGIN
+		DECLARE @REPLY NVARCHAR(10)
+		DECLARE @STORAGE INT
+		SELECT @STORAGE =庫存量 FROM 產品資料 WHERE 產品編號= @Product;
+		IF   @nn <= @STORAGE
+			SET @REPLY= '庫存OK'
+		ELSE    SET @REPLY='庫存不足'
+		RETURN @REPLY
+	END
+GO
+
+DROP FUNCTION 產品庫存量
+SELECT [dbo].[產品庫存量](1,40)
+
+
+
