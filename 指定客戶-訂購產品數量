@@ -1,0 +1,23 @@
+
+
+/*找出客戶編號為「SAVEA」在 2003 年所訂購的各項產品的數量*/	
+
+    SELECT B.產品編號,C.產品,SUM(B.數量) AS 數量
+		FROM 訂貨主檔 AS A INNER JOIN 訂貨明細 AS B ON A.訂單號碼=B.訂單號碼
+		JOIN 產品資料 AS C ON B.產品編號=C.產品編號
+		WHERE YEAR(A.訂單日期)=2003 AND A.客戶編號='SAVEA'
+		GROUP BY B.產品編號,C.產品
+---------------------------------------------------------------------------------------------------------------------
+/*同上，找出訂購數量超過50個以上的產品*/
+
+
+WITH TT
+AS
+(
+		SELECT B.產品編號,C.產品,SUM(B.數量) AS 數量
+		FROM 訂貨主檔 AS A INNER JOIN 訂貨明細 AS B ON A.訂單號碼=B.訂單號碼
+		JOIN 產品資料 AS C ON B.產品編號=C.產品編號
+		WHERE YEAR(A.訂單日期)=2003 AND A.客戶編號='SAVEA'
+		GROUP BY B.產品編號,C.產品
+
+)   SELECT TT.產品 ,TT.數量 FROM TT WHERE 數量 >50
