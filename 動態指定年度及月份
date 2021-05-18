@@ -1,0 +1,19 @@
+
+/*動態指定年度及月份 各縣市各類產品*/
+
+
+CREATE PROCEDURE 各縣市各類產品查詢 @Year INT,  @month INT
+AS
+
+		SELECT DISTINCT(送貨城市) AS 縣市,D.類別名稱,SUM(B.數量) AS 數量 
+		FROM 訂貨主檔 AS A JOIN 訂貨明細 AS B ON A.訂單號碼=B.訂單號碼
+				   JOIN 產品資料 AS C ON B.產品編號=C.產品編號
+	               JOIN 產品類別 AS D ON C.類別編號=D.類別編號
+		WHERE YEAR(A.訂單日期) = @Year AND MONTH(A.訂單日期) = @month
+		GROUP BY 送貨城市,D.類別名稱
+
+GO
+drop PROCEDURE 各縣市各類產品查詢
+GO
+
+EXECUTE 各縣市各類產品查詢 2002,12
