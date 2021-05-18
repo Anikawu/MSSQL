@@ -1,0 +1,31 @@
+
+
+/*任意指定某一商品，有買過此項商品的客戶，同時一併最常買哪些產品？(列出前三名)*/
+
+
+WITH TT
+AS
+(
+		SELECT A.客戶編號 ,A.訂單號碼,C.產品   ----有買過此項商品的客戶
+		FROM 訂貨主檔 AS A INNER JOIN 訂貨明細 AS B ON A.訂單號碼=B.訂單號碼
+		JOIN 產品資料 AS C ON B.產品編號=C.產品編號
+		WHERE B.產品編號 = 11
+		GROUP BY A.客戶編號,C.產品,A.訂單號碼
+)
+,T2
+AS(
+
+   SELECT D.客戶編號,D.訂單號碼,C.產品
+   FROM 訂貨主檔 AS A INNER JOIN 訂貨明細 AS B ON A.訂單號碼=B.訂單號碼
+		JOIN 產品資料 AS C ON B.產品編號=C.產品編號                      ---找出客戶每筆訂單內的所有產品676
+		JOIN TT AS D ON A.客戶編號=D.客戶編號
+   WHERE B.產品編號 <> 11
+   GROUP BY D.客戶編號,C.產品,D.訂單號碼
+  
+)
+   SELECT TOP(3)T2.產品,COUNT(T2.產品) AS 次數
+   FROM T2                                           --訂單內還包含哪些產品
+   GROUP BY T2.產品
+   ORDER BY 次數 DESC
+   
+   
