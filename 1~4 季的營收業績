@@ -1,0 +1,16 @@
+
+/*2002年 1~4 季的營收業績*/
+
+
+SELECT DATEPART(QUARTER,A.訂單日期) AS 季度
+		,ISNULL(SUM(B.總金額),0) AS 營收業績
+FROM 訂貨主檔 AS A JOIN 
+(
+		SELECT 訂單號碼,ROUND(SUM(單價*數量*(1-折扣)),2) AS 總金額
+		FROM 訂貨明細
+		GROUP BY 訂單號碼
+)AS  B 
+ON A.訂單號碼=B.訂單號碼 
+WHERE DATEPART(YEAR,A.訂單日期) = 2002
+GROUP BY ALL DATEPART(QUARTER,A.訂單日期)
+ORDER BY 季度
