@@ -1,0 +1,10 @@
+
+
+/*找出與趙飛燕居住在相同城市的其他員工*/
+
+SELECT DISTINCT A.員工編號,A.姓名,SUBSTRING(A.地址,1,3) AS 縣市
+FROM 員工 AS A INNER JOIN 員工 AS B
+ON SUBSTRING(A.地址,1,3) = SUBSTRING(B.地址,1,3)  
+WHERE A.員工編號 <> 3 AND SUBSTRING(B.地址,1,3)='台北市'
+
+
