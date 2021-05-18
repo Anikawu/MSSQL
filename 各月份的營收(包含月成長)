@@ -1,0 +1,19 @@
+
+
+/*2003年各月份的營收(包含月成長)*/
+
+
+SELECT MONTH(A.訂單日期) AS 月
+		,ROUND(SUM(B.總金額),2) AS 營收業績
+		,LAG(ROUND(SUM(B.總金額),2)) OVER (ORDER BY MONTH(A.訂單日期))
+		,ROUND((SUM(B.總金額)-LAG(SUM(B.總金額)) OVER (ORDER BY MONTH(A.訂單日期)))
+		/LAG(SUM(B.總金額)) OVER (ORDER BY MONTH(A.訂單日期))*100,2) AS '月成長(%)'
+
+FROM 訂貨主檔 AS A JOIN 
+(
+		SELECT 訂單號碼,ROUND(SUM(單價*數量*(1-折扣)),2) AS 總金額
+		FROM 訂貨明細
+		GROUP BY 訂單號碼
+)AS  B ON A.訂單號碼=B.訂單號碼 
+WHERE YEAR(A.訂單日期) = 2003
+GROUP BY MONTH(A.訂單日期)
