@@ -1,0 +1,23 @@
+
+
+/*任意指定某一商品，有買過此項商品的客戶，最常買哪些產品？(列出前三名)*/
+
+WITH TT
+AS
+(
+		SELECT A.客戶編號 ,C.產品
+		FROM 訂貨主檔 AS A INNER JOIN 訂貨明細 AS B ON A.訂單號碼=B.訂單號碼
+		JOIN 產品資料 AS C ON B.產品編號=C.產品編號
+		WHERE B.產品編號 = 11
+		GROUP BY A.客戶編號 ,C.產品
+)
+
+   SELECT TOP(3)C.產品,COUNT(C.產品) AS 次數
+   FROM 訂貨主檔 AS A INNER JOIN 訂貨明細 AS B ON A.訂單號碼=B.訂單號碼
+		JOIN 產品資料 AS C ON B.產品編號=C.產品編號
+		JOIN TT AS D ON A.客戶編號=D.客戶編號
+   WHERE B.產品編號 <> 11
+   GROUP BY C.產品,C.產品
+   ORDER BY 次數 DESC
+   
+   
