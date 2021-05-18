@@ -1,0 +1,6 @@
+
+
+SELECT A.產品
+FROM  產品資料 AS A 
+WHERE A.產品 NOT IN(SELECT C.產品 FROM 訂貨主檔 AS A INNER JOIN 訂貨明細 AS B ON A.訂單號碼=B.訂單號碼
+	JOIN 產品資料 AS C ON B.產品編號=C.產品編號 WHERE (A.訂單日期)=2004 )  
