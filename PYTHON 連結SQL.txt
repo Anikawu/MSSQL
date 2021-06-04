@@ -1,0 +1,134 @@
+import tkinter as tk
+from tkinter import messagebox as msgbox
+from tkinter import scrolledtext as st
+import os
+import shutil as sh
+import pyodbc
+win=tk.Tk()
+win.title("PYTHON CONNECT SQL")
+win.geometry('800x600')
+
+def ConnectSQL(DBName,UID,PWD):
+    server = 'localhost'
+    database = DBName
+    username = UID
+    password = PWD
+    cnxn = pyodbc.connect(
+        'DRIVER={ODBC Driver 17 for SQL Server};SERVER=' + server + ';DATABASE=' + database + ';UID=' + username + ';PWD=' + password)
+    cursor = cnxn.cursor()
+    return cursor
+
+def Btn2Click():
+    server = 'localhost'
+    database = '中文北風'
+    username = "anika"
+    password = '1234'
+    cnxn = pyodbc.connect(
+        'DRIVER={ODBC Driver 17 for SQL Server};SERVER=' + server + ';DATABASE=' + database + ';UID=' + username + ';PWD=' + password)
+    cursor = cnxn.cursor()
+    cursor.execute("SELECT 產品編號,產品,單價,單位數量 FROM 產品資料")
+    rows = cursor.fetchall()
+    result = ""
+    for row in rows:
+
+        result+="{0}\t{1}\t{2}\t{3}\r\n".format(row.產品編號,row.產品,row.單價,row.單位數量)
+    ST.insert(tk.INSERT,result)
+
+def Btn3Click():
+    server = 'localhost'
+    database = '練練'
+    username = "anika"
+    password = '1234'
+    cnxn = pyodbc.connect(
+        'DRIVER={ODBC Driver 17 for SQL Server};SERVER=' + server + ';DATABASE=' + database + ';UID=' + username + ';PWD=' + password)
+    cursor = cnxn.cursor()
+    cursor.execute("SELECT 產品編號,品名,價錢 FROM 巨巨")
+    rows = cursor.fetchall()
+    result = ""
+    for row in rows:
+
+        result+="{0}\t{1}\t{2}\r\n".format(row.產品編號,row.品名,row.價錢)
+    ST.insert(tk.INSERT,result)
+def Btn4Click():
+    cursor = ConnectSQL("練練", "anika", "1234")
+    sql = "INSERT INTO 巨巨(產品編號,品名,價錢) VALUES(?,?,?);"
+    vals = (int(TB1_value.get()), TB2_value.get(), float(TB3_value.get()))
+    cursor.execute(sql, vals)
+    cursor.commit()
+    msgbox.showinfo("成功", "新增資料成功！")
+
+def Btn5Click():
+    cursor=ConnectSQL("中文北風","anika","1234")
+    sql="""\
+          DECLARE @ss MONEY;DECLARE @aa MONEY;DECLARE @cc INT;
+          EXEC @cc=產品查詢 ?,?,@ss OUTPUT,@aa OUTPUT;
+          SELECT @ss AS v1,@aa AS v2,@cc AS v3;
+          """
+    vals=(float(TB4_value.get()),float(TB5_value.get()))
+    cursor.execute(sql,vals)
+    rows = cursor.fetchall()
+    result = ""
+    for row in rows:
+        result+="{0}\t{1}\t{2}\t{3}\r\n".format(row.產品編號, row.產品,row.單價,row.單位數量)
+
+    result+="\r\n"
+    #第二組資料
+    cursor.nextset()
+    rows=cursor.fetchall()
+    for row in rows:
+        result+="總金額:{0}\r\n平均金額:{1}\r\n資料筆數:{2}\r\n".format(row.v1,row.v2,row.v3)
+    ST.insert(tk.INSERT, result)
+
+
+
+
+
+
+def clearTextInput():   #"1.0"和"end"是指 Tkinter 文字框控制元件中內容的第一個字元和最後一個字元
+    ST.delete("1.0","end")
+
+
+ST=st.ScrolledText(win,width=60,height=20)
+Btn1=tk.Button(win,text="清除",width=10,height=2,command=clearTextInput)
+Btn2=tk.Button(win,text="中文北風",bg="gray",width=10,height=2,command=Btn2Click)
+Btn3=tk.Button(win,text="巨巨",bg="gray",width=10,height=2,command=Btn3Click)
+Btn4=tk.Button(win,text="輸入",bg="gray",width=10,height=2,command=Btn4Click)
+Btn5=tk.Button(win,text="查詢",bg="gray",width=10,height=2,command=Btn5Click)
+L1=tk.Label(win,text="編號",width=10,height=2)
+L2=tk.Label(win,text="品名",width=10,height=2)
+L3=tk.Label(win,text="價錢",width=10,height=2)
+L4=tk.Label(win,text="最低價格",width=10,height=2)
+L5=tk.Label(win,text="最高價格",width=10,height=2)
+TB1_value=tk.StringVar()
+TB2_value=tk.StringVar()
+TB3_value=tk.StringVar()
+TB4_value=tk.StringVar()
+TB5_value=tk.StringVar()
+TB1=tk.Entry(win,text="",width=20,textvariable=TB1_value)
+TB2=tk.Entry(win,text="",width=20,textvariable=TB2_value)
+TB3=tk.Entry(win,text="",width=20,textvariable=TB3_value)
+TB4=tk.Entry(win,text="",width=20,textvariable=TB4_value)
+TB5=tk.Entry(win,text="",width=20,textvariable=TB5_value)
+
+
+
+L1.place(x=10,y=45)
+L2.place(x=10,y=95)
+L3.place(x=10,y=145)
+L4.place(x=5,y=195)
+L5.place(x=5,y=245)
+TB1.place(x=70,y=50)
+TB2.place(x=70,y=100)
+TB3.place(x=70,y=150)
+TB4.place(x=70,y=200)
+TB5.place(x=70,y=250)
+
+ST.place(x=300,y=30)
+Btn1.place(x=70,y=350)
+Btn2.place(x=300,y=350)
+Btn3.place(x=400,y=350)
+Btn4.place(x=500,y=350)
+Btn5.place(x=600,y=350)
+
+
+win.mainloop()
